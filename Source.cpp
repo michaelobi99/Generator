@@ -10,7 +10,17 @@ Generator<int> range(int start = 0, int stop = std::numeric_limits<int>::max(), 
 	}
 }
 int main() {
-	for (auto elem : range(1, 200, 5))
+	auto ran = range(1, 4);
+	try {
+		std::cout << "\n" << ran.next() << "\n";
+		std::cout << "\n" << ran.next() << "\n";
+		std::cout << "\n" << ran.next() << "\n";
+		std::cout << "\n" << ran.next() << "\n";
+	}
+	catch (std::exception const& error) {
+		std::cout << error.what() << "\n";
+	}
+	for (auto elem : range(1, 200, 2)) {
 		std::cout << elem << " ";
-	std::cout << "\n" << std::numeric_limits<int>::max();
+	}
 }

@@ -3,10 +3,14 @@
 #include <stdexcept>
 #include <exception>
 #include <utility>
+#include <string>
+#include <format>
+
 template <typename T>
 class Generator
 {
 public:
+	class StopIteration;
 	class promise_type;
 	class iterator;
 	Generator() = default;
@@ -38,6 +42,13 @@ public:
 	}
 	iterator end() {
 		return { nullptr };
+	}
+	auto next() {
+		coroutineHandle.resume();
+		if (coroutineHandle.done()) {
+			throw StopIteration("Out of range");
+		}
+		return *coroutineHandle.promise().value;
 	}
 private:
 	std::coroutine_handle<promise_type> coroutineHandle{ nullptr };
@@ -117,4 +128,17 @@ public:
 	}
 private:
 	std::coroutine_handle<Generator::promise_type> handle{ nullptr };
+};
+
+template <typename T>
+class Generator<T>::StopIteration : public std::exception {
+public:
+	StopIteration(std::string_view message){
+		m = std::format("ERROR: {}", message);
+	}
+	virtual const char* what() const noexcept override {
+		return m.c_str();
+	}
+private:
+	std::string m;
 };
